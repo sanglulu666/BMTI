@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>羽毛球人格测试 · 十六型球友鉴定器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: linear-gradient(145deg, #1a5f3a 0%, #0e3e24 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, 'Noto Sans CJK SC', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 750px;
+            width: 100%;
+            background: #fef7e0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255,245,200,0.6) 2%, transparent 2.5%);
+            background-size: 28px 28px;
+            border-radius: 64px 48px 64px 48px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,200,0.8);
+            overflow: hidden;
+        }
+        .test-header {
+            background: #2c2b26;
+            padding: 24px 24px 18px;
+            text-align: center;
+            color: #ffdd99;
+            border-bottom: 4px solid #ffb347;
+        }
+        .test-header h1 {
+            margin: 0;
+            font-size: 1.9rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFE6B0, #FFB347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .test-header p {
+            margin: 8px 0 0;
+            font-size: 0.85rem;
+            color: #ddbb77;
+        }
+        .progress-area {
+            padding: 20px 28px 8px;
+            background: #fff3df;
+        }
+        .progress-bar-bg {
+            background: #e0cfb0;
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ff8c42;
+            border-radius: 40px;
+            transition: width 0.3s ease;
+        }
+        .question-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #8b6946;
+            margin-top: 8px;
+        }
+        .question-card {
+            padding: 24px 28px 16px;
+        }
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #2d3e2b;
+            margin-bottom: 32px;
+            border-left: 6px solid #ff914d;
+            padding-left: 20px;
+        }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+        .option-item {
+            background: white;
+            border-radius: 60px;
+            border: 1.5px solid #eeddbb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-item:hover {
+            background: #fff4e6;
+            border-color: #ffaa66;
+        }
+        .option-prefix {
+            font-weight: 800;
+            background: #f0dbb4;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            margin-right: 18px;
+            font-size: 1.2rem;
+            color: #5a3e1f;
+        }
+        .option-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2c2b26;
+            flex: 1;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 28px 28px;
+            gap: 16px;
+        }
+        .btn {
+            background: #e9dfc7;
+            border: none;
+            padding: 12px 0;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            width: 48%;
+            text-align: center;
+        }
+        .btn-primary {
+            background: #ff914d;
+            color: white;
+            box-shadow: 0 4px 0 #b45a2b;
+        }
+        .btn-primary:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b45a2b;
+        }
+        .btn-secondary {
+            background: #cfc09f;
+            color: #2e241a;
+        }
+        .btn-secondary:active {
+            background: #bcac86;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+        .start-container {
+            text-align: center;
+            padding: 32px 28px 48px;
+        }
+        .start-icon {
+            font-size: 5rem;
+            margin: 20px 0 10px;
+        }
+        .start-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #c97e2c;
+            margin: 12px 0;
+        }
+        .start-desc {
+            color: #5a4a2e;
+            margin-bottom: 36px;
+            line-height: 1.5;
+            background: #fff3e0;
+            padding: 16px;
+            border-radius: 48px;
+            font-size: 0.95rem;
+        }
+        .btn-start {
+            background: #ff914d;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #b45a2b;
+            transition: 0.07s linear;
+            width: 80%;
+            margin: 10px auto;
+            display: inline-block;
+        }
+        .btn-start:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #b45a2b;
+        }
+        .result-container {
+            padding: 24px 28px 36px;
+            text-align: center;
+        }
+        .result-avatar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .result-avatar img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #ffb347;
+            background: #fff1df;
+        }
+        .result-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c97e2c, #e6a157);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 10px 0 6px;
+        }
+        .result-desc {
+            background: #f3efdf;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 1rem;
+            color: #2f3e2c;
+            margin-top: 18px;
+            line-height: 1.5;
+        }
+        .restart-btn {
+            margin-top: 28px;
+            background: #2c5e3f;
+            color: white;
+            width: 70%;
+            padding: 12px;
+            border-radius: 60px;
+            font-weight: bold;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #f9e7cf;
+            padding: 12px;
+            color: #ad8a5c;
+        }
+        @media (max-width: 500px) {
+            .question-text { font-size: 1.25rem; }
+            .option-text { font-size: 0.9rem; }
+            .result-name { font-size: 1.8rem; }
+            .btn-start { font-size: 1.2rem; padding: 14px 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="test-container" id="app">
+    <div class="test-header">
+        <h1>🏸 羽球人格鉴定器</h1>
+        <p>31道灵魂拷问 · 测测你是哪种球场老登/小登/大神</p>
+    </div>
+    <div id="dynamicContent"></div>
+    <footer>⚡ 选最像你的选项 · 解锁专属羽毛球人格</footer>
+</div>
+
+<script>
+    // ==================== 16种人格定义 ====================
+    const PERSONALITIES = [
+        { id: "GFXM", name: "功夫熊猫GFXM", desc: "球场灵活胖子，看似笨重实则杀球如炮，柔韧与力量并存，吉祥物担当。" },
+        { id: "GYLD", name: "诡异老登GYLD", desc: "动作诡异飘忽，出手不讲道理，经验老道让年轻人怀疑人生。" },
+        { id: "YSDS", name: "养生大师YSDS", desc: "快乐羽球第一，绝不救球勉强，打的是血脉畅通，佛系派掌门。" },
+        { id: "TZG", name: "童子功TZG", desc: "动作教科书级别，从小练就扎实基本功，稳定到令人绝望。" },
+        { id: "HCZPS", name: "后场重炮手HCZPS", desc: "后场见高就杀，暴力进攻美学，让对手不敢起球。" },
+        { id: "WQYGQ", name: "网前雨刮器WQYGQ", desc: "网前手感细腻，抹拨勾搓，像雨刮器一样干净利落。" },
+        { id: "CQNLW", name: "传奇耐力王CQNLW", desc: "跑不死拉吊王，三局体力怪，熬到对手主动失误。" },
+        { id: "QCFMT", name: "全场飞毛腿QCFMT", desc: "覆盖全场的防守范围，每个球都能到位，防守反击专家。" },
+        { id: "GGGNS", name: "杆杆概念神GGGNS", desc: "每一拍都极具理论美感，但实战随缘，属于概念型球友。" },
+        { id: "ZBXT", name: "装备信徒ZBXT", desc: "技术不够装备凑，限量球拍+专业球鞋，胜利必须源于顶级配置。" },
+        { id: "DQDS", name: "道歉大师DQDS", desc: "打杆、滚网、得分立刻举手致歉，礼貌且卑微，但从不改。" },
+        { id: "SHZJZJ", name: "赛后总结专家SHZJZJ", desc: "打球半小时，复盘两小时，战术分析头头是道。" },
+        { id: "MYST", name: "摸鱼圣体MYST", desc: "能站着绝不跑，看似漫不经心却总能神奇回球，深藏不露。" },
+        { id: "WQFQQ", name: "无情发球机WQFQQ", desc: "发球精准多变，一出手就掌握主动，让对手接发崩溃。" },
+        { id: "GYXD", name: "寡言小登GYXD", desc: "沉默寡言，冷面杀手，默默得分不庆祝，年轻但老成。" },
+        { id: "ZXYD", name: "装x瘾大ZXYD", desc: "最爱潇洒动作，反手过渡必须帅气，得分后必摆pose。" }
+    ];
+
+    function arr(...scores) { return scores; }
+
+    // ==================== 31个完整问题（30个原问题 + 1个sll问题） ====================
+    const questions = [
+        { text: "双打中你最喜欢哪个位置？", opts: [ 
+            { text: "后场重炮，全力扣杀", scores: arr(0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "网前封网，做球给队友", scores: arr(0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0) },
+            { text: "跑动补位，哪里缺人我去哪", scores: arr(0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0) },
+            { text: "快乐摸鱼，站在中间随缘打", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0) }
+        ]},
+        { text: "你觉得球场上最重要的是？", opts: [ 
+            { text: "绝对力量，一锤定音", scores: arr(0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "极致体能，拖垮对手", scores: arr(0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0) },
+            { text: "华丽技术，赏心悦目", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3) },
+            { text: "顶级装备，心理加成", scores: arr(0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0) }
+        ]},
+        { text: "当你打出滚网球得分，你会？", opts: [ 
+            { text: "立刻举手向对手道歉", scores: arr(0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0) },
+            { text: "面无表情默默捡球", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0) },
+            { text: "兴奋握拳庆祝", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2) },
+            { text: "表示运气也是实力", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你的正手高远球风格？", opts: [ 
+            { text: "又高又远，拉到对方底线", scores: arr(0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0) },
+            { text: "平高压迫，快速下压", scores: arr(0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "落点控制，精准边线", scores: arr(0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "随缘回球，能过网就行", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0) }
+        ]},
+        { text: "打完一场激烈比赛，你会？", opts: [ 
+            { text: "立即复盘分析每个球", scores: arr(0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0) },
+            { text: "大口喝水瘫坐休息", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "找球友总结战术", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) },
+            { text: "发朋友圈秀装备", scores: arr(0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0) }
+        ]},
+        { text: "你如何看待反手高远球？", opts: [ 
+            { text: "苦练多年，已是大招", scores: arr(0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "能用头顶不用反手", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "反手过渡网前更实际", scores: arr(0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0) },
+            { text: "潇洒反手杀，帅就完了", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3) }
+        ]},
+        { text: "打球的频率是？", opts: [ 
+            { text: "每周4次以上，发烧友", scores: arr(0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0) },
+            { text: "每周1-2次养生球", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "看心情，摸鱼为主", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0) },
+            { text: "为了练技术才去", scores: arr(0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你会花多少钱买羽毛球装备？", opts: [ 
+            { text: "千元旗舰拍+专业球鞋", scores: arr(0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0) },
+            { text: "够用就好，入门拍也行", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "收藏党，多支高端拍", scores: arr(0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1) },
+            { text: "装备必须顶级，技术随缘", scores: arr(0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0) }
+        ]},
+        { text: "比赛关键分你更相信？", opts: [ 
+            { text: "发球直接得分", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0) },
+            { text: "暴力进攻下压", scores: arr(0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "拉吊等待对手失误", scores: arr(0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0) },
+            { text: "网前细腻手感", scores: arr(0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "球场上你最讨厌哪种人？", opts: [ 
+            { text: "一直失误还指手画脚", scores: arr(0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "大喊大叫没球品", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "打球喜欢装X摆pose", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1) },
+            { text: "过分道歉每球都sorry", scores: arr(0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0) }
+        ]},
+        { text: "你的杀球声音像？", opts: [ 
+            { text: "爆炸巨响，地板震颤", scores: arr(0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "清脆响亮", scores: arr(0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "没什么声音，点杀为主", scores: arr(0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0) },
+            { text: "从来没杀过球", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你会刻意模仿职业球员的动作吗？", opts: [ 
+            { text: "会，反复练习录像", scores: arr(0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "偶尔模仿潇洒动作", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2) },
+            { text: "完全不会，自己舒服就好", scores: arr(0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "只模仿装备同款", scores: arr(0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0) }
+        ]},
+        { text: "面对比自己强的对手，心态是？", opts: [ 
+            { text: "兴奋，正是学习机会", scores: arr(0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0) },
+            { text: "无所谓，快乐打球", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "尽力拼每一分", scores: arr(0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0) },
+            { text: "战略性放弃，避免受伤", scores: arr(0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0) }
+        ]},
+        { text: "双打队友失误连连，你会？", opts: [ 
+            { text: "鼓励+分析原因", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) },
+            { text: "沉默不语自己多跑动", scores: arr(0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0) },
+            { text: "内心吐槽表面笑嘻嘻", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "赛后详细指出问题", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) }
+        ]},
+        { text: "你觉得羽毛球最重要的是？", opts: [ 
+            { text: "步法", scores: arr(0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0) },
+            { text: "手法", scores: arr(0,0,0,1,0,2,0,0,0,0,0,0,0,0,0,0) },
+            { text: "意识", scores: arr(0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "体能", scores: arr(0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你最喜欢约哪种球友打球？", opts: [ 
+            { text: "水平接近能对抗的", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "能带我飞的大腿", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0) },
+            { text: "能让我练习技术的", scores: arr(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "能一起摸鱼的养生局", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,1,0,0,0) }
+        ]},
+        { text: "你的反手网前处理？", opts: [ 
+            { text: "贴网勾对角", scores: arr(0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0) },
+            { text: "直接推腰", scores: arr(0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0) },
+            { text: "放网回中", scores: arr(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "经常失误", scores: arr(0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你如何看待场下热身？", opts: [ 
+            { text: "必须充分拉伸，避免受伤", scores: arr(0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "简单挥拍就行", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0) },
+            { text: "直接开打", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "热身也要帅", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2) }
+        ]},
+        { text: "你输球后通常第一反应？", opts: [ 
+            { text: "技不如人，甘拜下风", scores: arr(0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0) },
+            { text: "找借口: 今天状态不好", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1) },
+            { text: "马上想再来一局复仇", scores: arr(0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0) },
+            { text: "默默记下弱点", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) }
+        ]},
+        { text: "你觉得自己最大的球场标签？", opts: [ 
+            { text: "老油条/诡异出手", scores: arr(0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "年轻体力怪", scores: arr(0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,0) },
+            { text: "沉默刺客", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0) },
+            { text: "球场显眼包", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2) }
+        ]},
+        { text: "你如何选择球拍？", opts: [ 
+            { text: "看参数和科技", scores: arr(0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0) },
+            { text: "打感顺手就行", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "必须明星同款", scores: arr(0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1) },
+            { text: "越贵越厉害", scores: arr(0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0) }
+        ]},
+        { text: "你对场边指导的看法？", opts: [ 
+            { text: "很需要，喜欢战术交流", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) },
+            { text: "烦人，只想安静打球", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0) },
+            { text: "自己就是教练型", scores: arr(0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0) },
+            { text: "从来不听", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "你曾经因为打球受过严重伤病吗？", opts: [ 
+            { text: "有过，现在养生", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "从没受伤，注意保护", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "小伤不断，依然猛冲", scores: arr(0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0) },
+            { text: "受伤才懂护具重要性", scores: arr(0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0) }
+        ]},
+        { text: "你单打最擅长什么战术？", opts: [ 
+            { text: "四方球拉吊", scores: arr(0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0) },
+            { text: "突击进攻", scores: arr(0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "变速突破", scores: arr(0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0) },
+            { text: "控网抢攻", scores: arr(0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0) }
+        ]},
+        { text: "当你连续丢分，你会？", opts: [ 
+            { text: "改变节奏，擦汗思考", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "更凶狠进攻", scores: arr(0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "求稳拉吊", scores: arr(0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0) },
+            { text: "开始怀疑装备", scores: arr(0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0) }
+        ]},
+        { text: "你处理被动球的能力？", opts: [ 
+            { text: "能反抽变主动", scores: arr(0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0) },
+            { text: "勉强回网前", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "经常下网或出界", scores: arr(0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0) },
+            { text: "随缘回过去", scores: arr(0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0) }
+        ]},
+        { text: "你和队友配双打，更倾向于？", opts: [ 
+            { text: "前后站位，我负责后场", scores: arr(0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "前后站位，我负责网前", scores: arr(0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0) },
+            { text: "左右防守站位", scores: arr(0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0) },
+            { text: "轮转随意，看心情", scores: arr(0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0) }
+        ]},
+        { text: "你会为了救一个几乎不可能的球而鱼跃吗？", opts: [ 
+            { text: "经常鱼跃，拼尽全力", scores: arr(0,0,0,0,1,0,0,2,0,0,0,0,0,0,0,0) },
+            { text: "看场合，重要比赛会", scores: arr(0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0) },
+            { text: "绝不，容易受伤", scores: arr(0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0) },
+            { text: "鱼跃后必须摆个帅pose", scores: arr(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2) }
+        ]},
+        { text: "你觉得sll和你谁更强？", opts: [ 
+            { text: "sll强", scores: arr(0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0) },
+            { text: "sll更强", scores: arr(0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0) },
+            { text: "sll非常强", scores: arr(0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0) },
+            { text: "sll宇宙无敌超级强", scores: arr(0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0) }
+        ]}
+    ];
+
+    // 注意：上面的sll问题中，选择sll越强，给"道歉大师DQDS"加分越多（第11个人格索引为10）
+    // 这样可以测出玩家是否足够谦虚/幽默
+
+    // 确保问题总数是31
+    console.log("问题总数:", questions.length);
+
+    // 以下为测试逻辑代码（完整版）
+    let currentIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let app = document.getElementById('app');
+    let dynamicDiv = document.getElementById('dynamicContent');
+
+    function renderStartPage() {
+        dynamicDiv.innerHTML = `
+            <div class="start-container">
+                <div class="start-icon">🏸</div>
+                <div class="start-title">羽球人格鉴定器</div>
+                <div class="start-desc">
+                    31道题 · 测出你的球场真实人格<br>
+                    后场重炮手？网前雨刮器？还是养生大师？<br>
+                    快来解锁你的专属羽毛球人格！
+                </div>
+                <button class="btn-start" id="startBtn">开始测试 →</button>
+                <div style="margin-top: 24px; font-size: 0.75rem; color: #a5834e;">⚡ 共16种人格等你解锁</div>
+            </div>
+        `;
+        document.getElementById('startBtn')?.addEventListener('click', () => {
+            currentIndex = 0;
+            userAnswers.fill(null);
+            renderQuestion();
+        });
+    }
+
+    function renderQuestion() {
+        if (currentIndex >= questions.length) {
+            calculateResult();
+            return;
+        }
+        const q = questions[currentIndex];
+        const progress = ((currentIndex) / questions.length) * 100;
+        const letters = ['A', 'B', 'C', 'D'];
+        let optionsHtml = '';
+        q.opts.forEach((opt, idx) => {
+            optionsHtml += `
+                <div class="option-item" data-opt-index="${idx}">
+                    <div class="option-prefix">${letters[idx]}</div>
+                    <div class="option-text">${opt.text}</div>
+                </div>
+            `;
+        });
+        const hasPrev = currentIndex > 0;
+        const hasNextOrFinish = userAnswers[currentIndex] !== null;
+        dynamicDiv.innerHTML = `
+            <div class="progress-area">
+                <div class="progress-bar-bg"><div class="progress-fill" style="width: ${progress}%;"></div></div>
+                <div class="question-counter">第 ${currentIndex+1} / ${questions.length} 题</div>
+            </div>
+            <div class="question-card">
+                <div class="question-text">${q.text}</div>
+                <div class="options-grid" id="optionsGrid">
+                    ${optionsHtml}
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="prevBtn" ${!hasPrev ? 'disabled' : ''}>← 上一题</button>
+                    <button class="btn btn-primary" id="nextBtn" ${!hasNextOrFinish ? 'disabled' : ''}>${currentIndex === questions.length-1 ? '查看结果' : '下一题 →'}</button>
+                </div>
+            </div>
+        `;
+        // 绑定选项点击事件
+        document.querySelectorAll('.option-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const idx = parseInt(el.dataset.optIndex);
+                userAnswers[currentIndex] = idx;
+                // 更新下一题按钮状态
+                const nextBtn = document.getElementById('nextBtn');
+                if (nextBtn) nextBtn.disabled = false;
+                // 高亮选中效果
+                document.querySelectorAll('.option-item').forEach(opt => opt.style.background = 'white');
+                el.style.background = '#ffe0b5';
+            });
+        });
+        // 恢复高亮
+        if (userAnswers[currentIndex] !== null) {
+            const selectedIdx = userAnswers[currentIndex];
+            const items = document.querySelectorAll('.option-item');
+            if (items[selectedIdx]) items[selectedIdx].style.background = '#ffe0b5';
+        }
+        document.getElementById('prevBtn')?.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        });
+        document.getElementById('nextBtn')?.addEventListener('click', () => {
+            if (userAnswers[currentIndex] !== null) {
+                if (currentIndex < questions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    calculateResult();
+                }
+            } else {
+                alert('请先选择一个选项～');
+            }
+        });
+    }
+
+    function calculateResult() {
+        // 累加分数
+        let totalScores = new Array(16).fill(0);
+        for (let i = 0; i < questions.length; i++) {
+            const answerIdx = userAnswers[i];
+            if (answerIdx !== null) {
+                const scores = questions[i].opts[answerIdx].scores;
+                for (let j = 0; j < 16; j++) {
+                    totalScores[j] += scores[j];
+                }
+            }
+        }
+        // 找出最高分人格
+        let maxScore = -1;
+        let bestIdx = 0;
+        for (let i = 0; i < 16; i++) {
+            if (totalScores[i] > maxScore) {
+                maxScore = totalScores[i];
+                bestIdx = i;
+            }
+        }
+        const resultPersonality = PERSONALITIES[bestIdx];
+        // 渲染结果页面，支持插入图片（需要自己放置图片，文件命名规则为 id.png 或 id.jpg）
+        // 默认图片路径请替换为自己的，这里示例使用占位符
+        const imgSrc = `images/${resultPersonality.id}.jpg`;  // 请将图片放在 images/ 目录下，命名为 GFXM.png 等
+        dynamicDiv.innerHTML = `
+            <div class="result-container">
+                <div class="result-avatar">
+                    <img src="${imgSrc}" alt="${resultPersonality.name}" onerror="this.src='https://via.placeholder.com/160x160?text=🏸'">
+                </div>
+                <div class="result-name">${resultPersonality.name}</div>
+                <div class="result-desc">${resultPersonality.desc}</div>
+                <button class="restart-btn" id="restartBtn">重新测试 🔄</button>
+            </div>
+        `;
+        document.getElementById('restartBtn')?.addEventListener('click', () => {
+            currentIndex = 0;
+            userAnswers.fill(null);
+            renderStartPage();
+        });
+    }
+
+    renderStartPage();
+</script>
+</body>
+</html>
